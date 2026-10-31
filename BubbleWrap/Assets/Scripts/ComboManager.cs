@@ -52,8 +52,22 @@ public class ComboManager : MonoBehaviour
         }
 
         comboCount++;
-        scoreManager.AddPoints(comboCount); // 1º = 1 punto, 2º = 2, 3º = 3...
-        comboText.text = "Combo x" + comboCount;
+        // Multiplicamos los puntos del combo por el multiplicador de tu TiendaManager
+        float mult = 1f;
+        TiendaManager tienda = Object.FindFirstObjectByType<TiendaManager>();
+
+        if (tienda != null && tienda.listaMejoras != null)
+        {
+            Mejora mejoraMult = tienda.listaMejoras.Find(m => m != null && m.idMejora == "multiplicador");
+            if (mejoraMult != null)
+            {
+                mult = mejoraMult.valorActual;
+            }
+        }
+
+        int puntosFinales = Mathf.RoundToInt(comboCount * mult);
+        scoreManager.AddPoints(puntosFinales);
+        comboText.text = "Combo X" + comboCount; 
     }
 
     void EndCombo()

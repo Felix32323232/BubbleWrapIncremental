@@ -1,41 +1,43 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-/// Va en el prefab de la burbuja. Solo sabe reventarse y restaurarse.
-[RequireComponent(typeof(Button), typeof(Image))]
 public class Bubble : MonoBehaviour
 {
-    [SerializeField] Color activeColor = new Color(0.4f, 0.8f, 1f, 0.9f);
-    [SerializeField] Color poppedColor = new Color(0.4f, 0.8f, 1f, 0.15f);
-
+    [SerializeField] Button button;
     ComboManager comboManager;
-    Button button;
-    Image image;
+    bool popped;
 
     void Awake()
     {
-        button = GetComponent<Button>();
-        image = GetComponent<Image>();
+        if (button == null) button = GetComponent<Button>();
         button.onClick.AddListener(Pop);
-        Restore();
     }
 
-    // Lo llama BubbleArea justo después de crear la burbuja
     public void Init(ComboManager manager)
     {
         comboManager = manager;
     }
 
-    void Pop()
+    public void Pop()
     {
+        if (popped) return;
+        popped = true;
         button.interactable = false;
-        image.color = poppedColor;
-        comboManager.OnBubblePopped();
+
+        // Avisamos al ComboManager de que se ha roto una burbuja
+        if (comboManager != null)
+        {
+            comboManager.OnBubblePopped();
+        }
+
+        // Destruimos o desactivamos la burbuja según vuestra lógica original
+        gameObject.SetActive(false);
     }
 
     public void Restore()
     {
+        popped = false;
         button.interactable = true;
-        image.color = activeColor;
+        gameObject.SetActive(true);
     }
 }
