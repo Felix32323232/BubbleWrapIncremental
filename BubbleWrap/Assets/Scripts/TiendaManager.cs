@@ -1,6 +1,5 @@
 using UnityEngine;
 using System.Collections.Generic;
-using UnityEngine.InputSystem;
 
 public class TiendaManager : MonoBehaviour
 {
@@ -49,11 +48,7 @@ public class TiendaManager : MonoBehaviour
         switch (mejora.idMejora)
         {
             case "mas_burbujas":
-                mejora.valorActual += mejora.incrementoPorNivel;
-                if (bubbleArea != null)
-                {
-                    bubbleArea.AddBubbles(Mathf.RoundToInt(mejora.incrementoPorNivel));
-                }
+                if (bubbleArea != null) bubbleArea.GrowGrid();
                 break;
 
             case "combo_tiempo":
@@ -67,14 +62,6 @@ public class TiendaManager : MonoBehaviour
             case "multiplicador":
                 mejora.valorActual += mejora.incrementoPorNivel;
                 break;
-        }
-    }
-    void Update()
-    {
-        // Forma compatible con el New Input System para probar con la tecla 'C'
-        if (Keyboard.current != null && Keyboard.current.cKey.wasPressedThisFrame)
-        {
-            IntentarComprarMejora("multiplicador");
         }
     }
 }

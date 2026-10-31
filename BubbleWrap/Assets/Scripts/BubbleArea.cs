@@ -35,7 +35,13 @@ public class BubbleArea : MonoBehaviour
     /// Añade burbujas (por ejemplo, AddBubbles(1) al comprar una mejora).
     public void AddBubbles(int amount)
     {
-        SetBubbleCount(bubbles.Count + amount);
+        SetBubbleCount(bubbles.Count * amount);
+    }
+    /// Crece la cuadrícula un lado más: 9 -> 16 -> 25 -> 36...
+    public void GrowGrid()
+    {
+        int side = Mathf.RoundToInt(Mathf.Sqrt(bubbles.Count)) + 1;
+        SetBubbleCount(side * side);
     }
 
     /// Fija el número total de burbujas.
