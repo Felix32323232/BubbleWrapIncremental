@@ -1,10 +1,11 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems; // NUEVO
 
-/// Zona donde viven las burbujas. Las genera y las reparte en una cuadrícula
-/// que se adapta al tamaño de la zona: cuantas más burbujas, más pequeñas.
+/// Zona donde viven las burbujas. Las genera, las reparte en una cuadrícula
+/// y gestiona los clicks (un click puede reventar varias burbujas).
 /// Va en el objeto ZonaBurbujas.
-public class BubbleArea : MonoBehaviour
+public class BubbleArea : MonoBehaviour, IPointerDownHandler // NUEVO: IPointerDownHandler
 {
     [Header("Referencias")]
     [SerializeField] Bubble bubblePrefab;
@@ -14,6 +15,11 @@ public class BubbleArea : MonoBehaviour
     [SerializeField] int initialBubbles = 9;
     [Range(0.3f, 1f)]
     [SerializeField] float bubbleScale = 0.85f; // tamaño de la burbuja respecto a su celda
+
+    [Header("Click")] // NUEVO
+    // Radio EXTRA del click, en unidades de canvas. 0 = solo revienta la burbuja pulsada.
+    // La mejora "tamano_click" modifica este valor.
+    public float clickRadius = 0f;
 
     RectTransform area;
     readonly List<Bubble> bubbles = new List<Bubble>();
@@ -30,13 +36,36 @@ public class BubbleArea : MonoBehaviour
         SetBubbleCount(initialBubbles);
     }
 
+    // --- Click (NUEVO) ---
+
+    public void OnPointerDown(PointerEventData eventData)
+    {
+        if (eventData.button != PointerEventData.InputButton.Left) return;
+
+        // Posición del click en el espacio local de la zona
+        if (!RectTransformUtility.ScreenPointToLocalPointInRectangle(
+                area, eventData.position, eventData.pressEventCamera, out Vector2 click)) return;
+
+        foreach (Bubble b in bubbles)
+        {
+            if (b.IsPopped) continue;
+
+            RectTransform rt = (RectTransform)b.transform;
+            Vector2 center = area.InverseTransformPoint(rt.position);
+            float reach = clickRadius + rt.rect.width / 2f; // radio del click + radio de la burbuja
+
+            if (Vector2.Distance(click, center) <= reach) b.Pop();
+        }
+    }
+
     // --- Para la tienda ---
 
-    /// Añade burbujas (por ejemplo, AddBubbles(1) al comprar una mejora).
+    /// Añade burbujas sueltas.
     public void AddBubbles(int amount)
     {
-        SetBubbleCount(bubbles.Count * amount);
+        SetBubbleCount(bubbles.Count + amount);
     }
+
     /// Crece la cuadrícula un lado más: 9 -> 16 -> 25 -> 36...
     public void GrowGrid()
     {

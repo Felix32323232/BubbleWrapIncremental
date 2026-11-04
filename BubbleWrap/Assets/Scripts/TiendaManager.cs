@@ -50,7 +50,6 @@ public class TiendaManager : MonoBehaviour
             case "mas_burbujas":
                 if (bubbleArea != null) bubbleArea.GrowGrid();
                 break;
-
             case "combo_tiempo":
                 mejora.valorActual += mejora.incrementoPorNivel;
                 if (comboManager != null)
@@ -58,9 +57,12 @@ public class TiendaManager : MonoBehaviour
                     comboManager.comboDuration = mejora.valorActual;
                 }
                 break;
-
             case "multiplicador":
                 mejora.valorActual += mejora.incrementoPorNivel;
+                break;
+            case "click":
+                mejora.valorActual += mejora.incrementoPorNivel;
+                if (bubbleArea != null) bubbleArea.clickRadius = mejora.valorActual;
                 break;
         }
     }

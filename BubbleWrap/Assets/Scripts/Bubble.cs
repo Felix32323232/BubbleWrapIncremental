@@ -1,18 +1,14 @@
 using UnityEngine;
-using UnityEngine.UI;
 
+/// Va en el prefab de la burbuja. Ya NO es un botón: los clicks los gestiona BubbleArea.
 public class Bubble : MonoBehaviour
 {
-    [SerializeField] Button button;
     ComboManager comboManager;
     bool popped;
 
-    void Awake()
-    {
-        if (button == null) button = GetComponent<Button>();
-        button.onClick.AddListener(Pop);
-    }
+    public bool IsPopped => popped;
 
+    // Lo llama BubbleArea justo después de crear la burbuja
     public void Init(ComboManager manager)
     {
         comboManager = manager;
@@ -22,22 +18,16 @@ public class Bubble : MonoBehaviour
     {
         if (popped) return;
         popped = true;
-        button.interactable = false;
 
         // Avisamos al ComboManager de que se ha roto una burbuja
-        if (comboManager != null)
-        {
-            comboManager.OnBubblePopped();
-        }
+        if (comboManager != null) comboManager.OnBubblePopped();
 
-        // Destruimos o desactivamos la burbuja según vuestra lógica original
         gameObject.SetActive(false);
     }
 
     public void Restore()
     {
         popped = false;
-        button.interactable = true;
         gameObject.SetActive(true);
     }
 }
