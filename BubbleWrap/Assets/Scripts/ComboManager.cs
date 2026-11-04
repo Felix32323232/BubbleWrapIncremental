@@ -7,6 +7,7 @@ public class ComboManager : MonoBehaviour
 {
     [Header("Ajustes (las mejoras modificarán esto)")]
     public float comboDuration = 2f;
+    public float pointsMultiplier = 1f;
     public bool resetTimerOnEachClick = false;
 
     [Header("Referencias")]
