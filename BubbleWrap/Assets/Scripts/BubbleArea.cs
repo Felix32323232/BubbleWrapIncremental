@@ -25,6 +25,15 @@ public class BubbleArea : MonoBehaviour, IPointerDownHandler // NUEVO: IPointerD
     readonly List<Bubble> bubbles = new List<Bubble>();
 
     public int Count => bubbles.Count;
+    public int RemainingBubbles
+    {
+        get
+        {
+            int n = 0;
+            foreach (Bubble b in bubbles) if (!b.IsPopped) n++;
+            return n;
+        }
+    }
 
     void Awake()
     {
@@ -56,6 +65,7 @@ public class BubbleArea : MonoBehaviour, IPointerDownHandler // NUEVO: IPointerD
 
             if (Vector2.Distance(click, center) <= reach) b.Pop();
         }
+        comboManager.CheckAllPopped();
     }
 
     // --- Para la tienda ---
@@ -103,7 +113,6 @@ public class BubbleArea : MonoBehaviour, IPointerDownHandler // NUEVO: IPointerD
     }
 
     // --- Colocación ---
-
     void Layout()
     {
         int n = bubbles.Count;

@@ -75,6 +75,7 @@ public class RenacimientoManager : MonoBehaviour
 
     void ReiniciarPartida()
     {
+        comboManager.CancelCombo();
         scoreManager.ResetScore();
         tienda.ReiniciarMejoras();
 
@@ -139,6 +140,9 @@ public class RenacimientoManager : MonoBehaviour
                     }
                     break;
                 }
+            case "inicio_burbujas":
+                bubbleArea.GrowGrid(); // la cuadrícula crece ya
+                break;
         }
 
         RefrescarUI();

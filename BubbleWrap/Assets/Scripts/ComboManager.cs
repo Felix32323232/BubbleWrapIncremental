@@ -70,7 +70,19 @@ public class ComboManager : MonoBehaviour
         scoreManager.AddPoints(puntosFinales);
         comboText.text = "Combo X" + comboCount; 
     }
-
+    // Cancela el combo actual sin restaurar burbujas (lo usa el renacimiento)
+    public void CancelCombo()
+    {
+        active = false;
+        comboCount = 0;
+        comboBar.SetActive(false);
+        comboText.text = "";
+    }
+    // Lo llama BubbleArea al terminar cada click
+    public void CheckAllPopped()
+    {
+        if (active && bubbleArea.RemainingBubbles == 0) EndCombo();
+    }
     void EndCombo()
     {
         active = false;

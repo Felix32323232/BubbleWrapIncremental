@@ -2385,7 +2385,7 @@ MonoBehaviour:
   multiplicadorCosto: 1.15
   nivelActual: 0
   nivelMaximo: 10
-  valorActual: 1
+  valorActual: 2
   incrementoPorNivel: 1.2
 --- !u!4 &810927446
 Transform:
