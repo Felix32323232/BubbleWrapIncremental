@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
+using TMPro;
 
 public class TiendaManager : MonoBehaviour
 {
@@ -11,13 +12,33 @@ public class TiendaManager : MonoBehaviour
     [SerializeField] BubbleArea bubbleArea;
     [SerializeField] ComboManager comboManager;
 
+    [System.Serializable]
+    public class MejoraUI
+    {
+        public string idMejora;   // el mismo id que la mejora (ej: "click")
+        public TMP_Text texto;    // texto del botón: muestra nombre, nivel y coste
+    }
+
+    [Header("Textos de las mejoras")]
+    [SerializeField] List<MejoraUI> textos = new List<MejoraUI>();
+
     // Valor de cada mejora al empezar, para poder reiniciarlas
     readonly List<float> valoresIniciales = new List<float>();
 
     void Awake()
     {
+        // El tiempo base del combo es el que tenga ComboManager en el Inspector,
+        // así la mejora y el combo nunca empiezan con valores distintos.
+        Mejora combo = BuscarMejora("combo_tiempo");
+        if (combo != null && comboManager != null) combo.valorActual = comboManager.comboDuration;
+
         foreach (Mejora m in listaMejoras)
             valoresIniciales.Add(m != null ? m.valorActual : 0f);
+    }
+
+    void Start()
+    {
+        RefrescarUI();
     }
 
     // Método que llaman tus botones de la UI al hacer clic
@@ -37,12 +58,13 @@ public class TiendaManager : MonoBehaviour
             return;
         }
 
-        int costo = Mathf.RoundToInt((float)mejora.CostoActual);
+        int costo = CostoDe(mejora);
 
         if (scoreManager != null && scoreManager.TrySpend(costo))
         {
             mejora.nivelActual++;
             AplicarEfecto(mejora);
+            RefrescarUI();
             Debug.Log("¡Comprado con éxito: " + mejora.nombreMostrado + "!");
         }
         else
@@ -84,6 +106,27 @@ public class TiendaManager : MonoBehaviour
         }
     }
 
+    int CostoDe(Mejora m)
+    {
+        return Mathf.RoundToInt((float)m.CostoActual);
+    }
+
+    // Actualiza el texto de cada botón: nombre, nivel y coste
+    void RefrescarUI()
+    {
+        foreach (MejoraUI ui in textos)
+        {
+            if (ui.texto == null) continue;
+
+            Mejora m = BuscarMejora(ui.idMejora);
+            if (m == null) continue;
+
+            ui.texto.text = m.nivelActual >= m.nivelMaximo
+                ? m.nombreMostrado + " (MAX)"
+                : m.nombreMostrado + "  Nv." + m.nivelActual + "\n" + CostoDe(m) + " puntos";
+        }
+    }
+
     public Mejora BuscarMejora(string idMejora)
     {
         return listaMejoras.Find(m => m != null && m.idMejora == idMejora);
@@ -101,5 +144,7 @@ public class TiendaManager : MonoBehaviour
             m.valorActual = valoresIniciales[i];
             AplicarValor(m);
         }
+
+        RefrescarUI();
     }
 }

@@ -11,6 +11,7 @@ public class RenacimientoManager : MonoBehaviour
     {
         public string idMejora;            // "puntos_permanentes", "inicio_burbujas", "combo_base"
         public string nombreMostrado;
+        [TextArea] public string descripcion;   // lo que sale en el tooltip de la reliquia
         public int costoBase = 1;          // coste en perlas
         public float multiplicadorCosto = 1.5f;
         public int nivelActual = 0;
@@ -123,9 +124,13 @@ public class RenacimientoManager : MonoBehaviour
         Perlas -= costo;
         m.nivelActual++;
 
-        // Efecto inmediato (inicio_burbujas se aplica en el próximo renacimiento)
+        // Efecto inmediato al comprar
         switch (id)
         {
+            case "inicio_burbujas":
+                bubbleArea.GrowGrid(); // la cuadrícula crece ya; tras renacer empezará con este tamaño
+                break;
+
             case "puntos_permanentes":
                 scoreManager.globalMultiplier = 1f + m.Bonus;
                 break;
@@ -140,9 +145,6 @@ public class RenacimientoManager : MonoBehaviour
                     }
                     break;
                 }
-            case "inicio_burbujas":
-                bubbleArea.GrowGrid(); // la cuadrícula crece ya
-                break;
         }
 
         RefrescarUI();
@@ -152,6 +154,20 @@ public class RenacimientoManager : MonoBehaviour
     {
         MejoraEspecial m = especiales.Find(e => e.idMejora == id);
         return m != null ? m.Bonus : 0f;
+    }
+
+    // --- Info de una reliquia (la usa el tooltip) ---
+
+    public string TextoInfo(string id)
+    {
+        MejoraEspecial m = especiales.Find(e => e.idMejora == id);
+        if (m == null) return "";
+
+        string estado = m.nivelActual >= m.nivelMaximo
+            ? "Nivel máximo"
+            : "Nivel " + m.nivelActual + "/" + m.nivelMaximo + "\nCoste: " + m.CostoActual + " perlas";
+
+        return "<b>" + m.nombreMostrado + "</b>\n" + m.descripcion + "\n\n" + estado;
     }
 
     // --- UI ---
